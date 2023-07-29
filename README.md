@@ -61,7 +61,7 @@ on your users controller, e.g:
 additional: subqueries can only return single column, so that is why we used take(1) attribute.
 
 
-## Dynamic Relationships Using Subqueries
+## Dynamic Relationships Using Subqueries - 4
 
 We can take single column via section 3, but what if we want multiple column?
 
