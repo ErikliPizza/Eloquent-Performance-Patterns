@@ -141,3 +141,36 @@ $posts = Post::with('comments:lazy')->get();
 ```
 
 Overall, Laravel's lazy loading helps improve the performance of your application by fetching related data only when necessary, minimizing unnecessary database queries, and reducing memory usage.
+
+
+## Calculate Totals Using Conditional Aggregates
+
+calculationg totals,
+
+option one: $statuses = (object) [];
+$statuses->requested = Feature::where('status', 'Requested')->count();
+$statuses->planned = Feature::where('status', 'Planned')->count();
+$statuses->completed = Feature::where('status', 'Completed')->count();
+
+it will send 3 different queries to the database as "select coun(*) as aggregate from "features" where "status" = "Requested"
+
+
+the right way:
+$statuses = Feature::toBase() -- //toBase, we do not wanna feature model return back, instead we want a collection of different totals
+
+$statuses = Feature::toBase()
+            ->selectRaw("count(case when status = 'Requested' then 1 end) as requested")
+            ->selectRaw("count(case when status = 'Planned' then 1 end) as planned")
+            ->selectRaw("count(case when status = 'Completed' then 1 end) as completed")
+            ->first();
+            
+it will send single query. as
+"select 
+   count(case when status = 'Requested' then 1 end), 
+   count(case when status = 'Planned' then 1 end), 
+   count(case when status = 'Completed' then 1 end)
+from features"
+
+## Optimizing Circular Relationships
+
+
